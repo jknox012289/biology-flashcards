@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biology Flashcards – Atoms to Cellular Respiration</title>
+<style>
+:root {
+  --bg: #0f172a;
+  --card: #1e293b;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --success: #22c55e;
+  --danger: #ef4444;
+  --border: #334155;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+}
+header {
+  width: 100%;
+  max-width: 640px;
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+h1 { font-size: 1.5rem; font-weight: 700; }
+.subtitle { color: var(--muted); font-size: 0.9rem; margin-top: 0.25rem; }
+.progress-wrap {
+  width: 100%;
+  max-width: 640px;
+  margin-bottom: 1rem;
+}
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+}
+.progress-bar {
+  height: 10px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  width: 0%;
+  transition: width 0.3s ease;
+}
+.stats {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 0.4rem;
+}
+.card-container {
+  width: 100%;
+  max-width: 640px;
+  perspective: 1000px;
+  margin-bottom: 1.25rem;
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  min-height: 280px;
+  padding: 1.75rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.card-section {
+  position: absolute;
+  top: 0.75rem;
+  left: 1rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  font-weight: 600;
+}
+.card-counter {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.question {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+.hint-btn {
+  align-self: flex-start;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin-bottom: 0.75rem;
+}
+.hint-btn:hover { border-color: var(--accent); color: var(--accent); }
+.hint {
+  background: rgba(56,189,248,0.1);
+  border-left: 3px solid var(--accent);
+  padding: 0.6rem 0.8rem;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.95rem;
+  color: #e0f2fe;
+  margin-bottom: 1rem;
+  display: none;
+}
+.answer {
+  font-size: 1.15rem;
+  line-height: 1.5;
+  color: #e2e8f0;
+  display: none;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+.controls {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.btn-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+button {
+  flex: 1;
+  min-width: 100px;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+button:active { transform: scale(0.98); }
+.btn-primary { background: var(--accent); color: #0f172a; }
+.btn-success { background: var(--success); color: #fff; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-secondary { background: var(--border); color: var(--text); }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.completion {
+  text-align: center;
+  padding: 2rem 1rem;
+  display: none;
+}
+.completion h2 { color: var(--success); margin-bottom: 0.5rem; }
+.completion p { color: var(--muted); }
+@media (max-width: 480px) {
+  .question { font-size: 1.1rem; }
+  button { padding: 0.65rem; font-size: 0.95rem; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Biology Flashcards</h1>
+  <p class="subtitle">Atoms → Macromolecules → Nucleic Acids → Water Reactions → Cellular Respiration</p>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span>Mastered</span>
+    <span id="progress-text">0 / 0</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress-fill"></div>
+  </div>
+  <div class="stats">
+    <span id="correct-count">Correct this session: 0</span>
+  </div>
+</div>
+
+<div class="card-container">
+  <div class="card" id="card">
+    <div class="card-section" id="section"></div>
+    <div class="card-counter" id="counter"></div>
+    <div class="question" id="question"></div>
+    <button class="hint-btn" id="hint-btn">Show Hint</button>
+    <div class="hint" id="hint"></div>
+    <div class="answer" id="answer"></div>
+  </div>
+</div>
+
+<div class="controls" id="controls">
+  <div class="btn-row" id="action-row">
+    <button class="btn-primary" id="show-answer">Show Answer</button>
+  </div>
+  <div class="btn-row" id="grade-row" style="display:none;">
+    <button class="btn-danger" id="incorrect">Still Learning</button>
+    <button class="btn-success" id="correct">Got It!</button>
+  </div>
+  <div class="btn-row">
+    <button class="btn-secondary" id="prev">Previous</button>
+    <button class="btn-secondary" id="next">Next</button>
+    <button class="btn-outline" id="shuffle">Shuffle</button>
+  </div>
+  <div class="btn-row">
+    <button class="btn-outline" id="reset">Reset Progress</button>
+  </div>
+</div>
+
+<div class="completion" id="completion">
+  <h2>All cards mastered!</h2>
+  <p>Great work. You can review them anytime or reset to start over.</p>
+  <button class="btn-primary" id="review" style="margin-top:1rem;">Review All</button>
+</div>
+
+<script>
+const cards = [
+  // Atomic Structure
+  { section: "Atomic Structure", q: "What is an atom?", a: "The basic unit of matter.", hint: "Smallest unit that still has the properties of an element." },
+  { section: "Atomic Structure", q: "What determines an element's identity?", a: "The number of protons.", hint: "Atomic number." },
+  { section: "Atomic Structure", q: "Describe a proton.", a: "Positively charged particle in the nucleus; mass ≈ 1 amu.", hint: "Positive charge, in the nucleus." },
+  { section: "Atomic Structure", q: "Describe a neutron.", a: "Neutrally charged particle in the nucleus; mass ≈ 1 amu.", hint: "No charge, in the nucleus." },
+  { section: "Atomic Structure", q: "Describe an electron.", a: "Negatively charged particle located outside the nucleus (electron cloud); mass ≈ 0 amu.", hint: "Negative charge, not in the nucleus." },
+  { section: "Atomic Structure", q: "What is an element?", a: "A substance that contains only one type of atom.", hint: "Example: pure copper." },
+  { section: "Atomic Structure", q: "What is a compound?", a: "Two or more different elements chemically bonded together. Cannot be separated by physical means.", hint: "Chemically combined, not just mixed." },
+  { section: "Atomic Structure", q: "Which 4 elements make up ~96% of the body's mass?", a: "Oxygen, Carbon, Hydrogen, and Nitrogen (CHON).", hint: "Starts with O, C, H, N." },
+  { section: "Atomic Structure", q: "What are organic compounds?", a: "Molecules that contain carbon (usually also hydrogen), have covalent bonds. Exception: CO₂ is inorganic.", hint: "Contain carbon, except CO₂." },
+  { section: "Atomic Structure", q: "What are inorganic compounds? Give examples.", a: "Usually lack carbon and are structurally simple. Examples: water, salts, acids, bases.", hint: "Water is the classic example." },
+  { section: "Atomic Structure", q: "How many valence electrons does carbon have, and how many bonds can it form?", a: "4 valence electrons; forms 4 bonds.", hint: "Carbon likes to share 4." },
+
+  // Macromolecules - Carbs
+  { section: "Carbohydrates", q: "What are macromolecules?", a: "Large organic molecules used for energy and structural support.", hint: "Big molecules made of smaller units." },
+  { section: "Carbohydrates", q: "What is the ratio of C:H:O in carbohydrates?", a: "1 C : 2 H : 1 O", hint: "Same ratio as water but with carbon." },
+  { section: "Carbohydrates", q: "What are monosaccharides?", a: "Simple sugars containing one sugar unit.", hint: "Single sugar." },
+  { section: "Carbohydrates", q: "Name the three most common monosaccharides.", a: "Glucose, Fructose, and Galactose.", hint: "All are C₆H₁₂O₆ isomers." },
+  { section: "Carbohydrates", q: "How are disaccharides formed?", a: "Two monosaccharides joined by dehydration synthesis. Example: sucrose.", hint: "Water is removed." },
+  { section: "Carbohydrates", q: "Name the four major polysaccharides.", a: "Starch, Glycogen, Cellulose, and Chitin.", hint: "Energy storage and structural ones." },
+
+  // Proteins
+  { section: "Proteins", q: "How many different amino acids are there?", a: "20", hint: "Standard number used to build proteins." },
+  { section: "Proteins", q: "What are the four main functions of proteins?", a: "1. Structural (skin, hair, muscles, bones) 2. Chemical messengers/receptors 3. Defense against disease 4. Enzymes", hint: "Structure, signals, defense, catalysts." },
+  { section: "Proteins", q: "What is produced when two amino acids join?", a: "A dipeptide + H₂O", hint: "Dipeptide and water." },
+  { section: "Proteins", q: "How many water molecules are released when 4 amino acids form a polypeptide?", a: "3 H₂O", hint: "One water per peptide bond; n-1 for n amino acids." },
+
+  // Lipids
+  { section: "Lipids", q: "What are the main functions of lipids?", a: "Long-term energy storage, protection, and insulation.", hint: "Energy, cushioning, warmth." },
+  { section: "Lipids", q: "Describe the structure of a fatty acid.", a: "Polar hydrophilic head (carboxylic acid) and a nonpolar hydrophobic carbon tail.", hint: "Head loves water, tail hates water." },
+  { section: "Lipids", q: "What are the three types of fatty acids?", a: "Saturated, monounsaturated, and polyunsaturated.", hint: "Based on double bonds." },
+  { section: "Lipids", q: "What makes up a triglyceride?", a: "3 fatty acids + 1 glycerol molecule, joined by ester bonds.", hint: "Three fatty acids plus glycerol." },
+  { section: "Lipids", q: "What is the difference between fats and oils?", a: "Fats = saturated triglycerides (solid at room temp, animals). Oils = unsaturated triglycerides (liquid at room temp, plants).", hint: "Saturation and source." },
+  { section: "Lipids", q: "What do phospholipids form and how are they arranged?", a: "They form the cell membrane. Heads are polar (hydrophilic); tails are nonpolar (hydrophobic).", hint: "Bilayer structure." },
+
+  // Nucleic Acids
+  { section: "Nucleic Acids", q: "What do nucleic acids contain instructions for?", a: "Making proteins (specific sequence of amino acids).", hint: "They code for proteins." },
+  { section: "Nucleic Acids", q: "What are the building blocks of nucleic acids?", a: "Nucleotides.", hint: "Smaller units that make DNA/RNA." },
+  { section: "Nucleic Acids", q: "What is DNA?", a: "The genetic material found in all cells.", hint: "Deoxyribonucleic acid." },
+  { section: "Nucleic Acids", q: "What does RNA do?", a: "Stores and transfers information needed to make proteins.", hint: "Messenger and more." },
+  { section: "Nucleic Acids", q: "What are the nucleobases in RNA?", a: "Cytosine, Guanine, Adenine, and Uracil.", hint: "U instead of T." },
+  { section: "Nucleic Acids", q: "What are the nucleobases in DNA?", a: "Cytosine, Guanine, Adenine, and Thymine.", hint: "T instead of U." },
+
+  // Water & Metabolism
+  { section: "Water & Metabolism", q: "What happens in a hydrolysis reaction?", a: "Water is added to a large molecule to break it into smaller molecules.", hint: "Water is used to split." },
+  { section: "Water & Metabolism", q: "What happens in a dehydration synthesis reaction?", a: "Two small molecules are joined to form a larger molecule, releasing water.", hint: "Water is released when building." },
+  { section: "Water & Metabolism", q: "What does the enzyme sucrase do?", a: "Breaks down sucrose (C₁₂H₂₂O₁₁) + H₂O into glucose (C₆H₁₂O₆) + fructose.", hint: "Splits table sugar." },
+
+  // Cellular Respiration
+  { section: "Cellular Respiration", q: "What is the overall chemical equation for cellular respiration?", a: "C₆H₁₂O₆ + 6 O₂ → 6 CO₂ + 6 H₂O + ATP", hint: "Glucose + oxygen → carbon dioxide + water + energy." },
+  { section: "Cellular Respiration", q: "Where does glycolysis occur and what does it produce from one glucose?", a: "Cytoplasm. Breaks glucose into two pyruvate molecules; yields 2 ATP and 2 NADH.", hint: "Happens in cytoplasm; net 2 ATP." },
+  { section: "Cellular Respiration", q: "Which organisms use glycolysis?", a: "Nearly all organisms.", hint: "Almost everything." },
+  { section: "Cellular Respiration", q: "Where does aerobic respiration occur and what does it require?", a: "Mitochondria; requires oxygen.", hint: "Powerhouse of the cell + O₂." },
+  { section: "Cellular Respiration", q: "What is pyruvate converted to when entering the mitochondria?", a: "Acetyl CoA.", hint: "2-carbon molecule that enters Krebs." },
+  { section: "Cellular Respiration", q: "In the Krebs cycle, what do the carbons and oxygens from acetyl CoA mainly become?", a: "CO₂.", hint: "Carbon dioxide is released." },
+  { section: "Cellular Respiration", q: "How many NADH and FADH₂ are produced per acetyl CoA in the Krebs cycle?", a: "3 NADH and 1 FADH₂.", hint: "Three of one, one of the other." },
+  { section: "Cellular Respiration", q: "How many additional ATP does the Krebs cycle produce from one glucose?", a: "2 ATP total.", hint: "One per acetyl CoA, two acetyl CoA per glucose." },
+  { section: "Cellular Respiration", q: "What is the role of the electron transport chain?", a: "Electron carriers move to the chain. Protons flow through ATP synthase to make ATP. Oxygen is the final electron acceptor and becomes water.", hint: "Makes most of the ATP; O₂ accepts electrons." },
+  { section: "Cellular Respiration", q: "What is fermentation?", a: "Glycolysis + anaerobic respiration. It does NOT produce ATP but regenerates NAD⁺ so glycolysis can continue.", hint: "Allows glycolysis to keep going without oxygen." },
+  { section: "Cellular Respiration", q: "What is lactic acid fermentation and where does it happen in humans?", a: "Converts pyruvic acid into lactic acid. Performed by some fungi, bacteria, and human muscle cells. Later converted back in the liver.", hint: "Muscle burn during intense exercise." },
+  { section: "Cellular Respiration", q: "What is alcoholic fermentation?", a: "Performed mostly by yeast and some bacteria. Converts pyruvic acid into ethyl alcohol.", hint: "How beer and wine are made." }
+];
+
+let currentIndex = 0;
+let order = cards.map((_, i) => i);
+let mastered = new Set();
+let sessionCorrect = 0;
+let showingAnswer = false;
+
+const el = {
+  section: document.getElementById('section'),
+  counter: document.getElementById('counter'),
+  question: document.getElementById('question'),
+  hint: document.getElementById('hint'),
+  answer: document.getElementById('answer'),
+  hintBtn: document.getElementById('hint-btn'),
+  showAnswer: document.getElementById('show-answer'),
+  actionRow: document.getElementById('action-row'),
+  gradeRow: document.getElementById('grade-row'),
+  correctBtn: document.getElementById('correct'),
+  incorrectBtn: document.getElementById('incorrect'),
+  prev: document.getElementById('prev'),
+  next: document.getElementById('next'),
+  shuffle: document.getElementById('shuffle'),
+  reset: document.getElementById('reset'),
+  progressFill: document.getElementById('progress-fill'),
+  progressText: document.getElementById('progress-text'),
+  correctCount: document.getElementById('correct-count'),
+  completion: document.getElementById('completion'),
+  controls: document.getElementById('controls'),
+  review: document.getElementById('review')
+};
+
+function updateProgress() {
+  const total = cards.length;
+  const done = mastered.size;
+  const pct = total ? (done / total) * 100 : 0;
+  el.progressFill.style.width = pct + '%';
+  el.progressText.textContent = `${done} / ${total}`;
+  el.correctCount.textContent = `Correct this session: ${sessionCorrect}`;
+  if (done === total && total > 0) {
+    el.controls.style.display = 'none';
+    el.completion.style.display = 'block';
+  } else {
+    el.controls.style.display = 'flex';
+    el.completion.style.display = 'none';
+  }
+}
+
+function showCard() {
+  const idx = order[currentIndex];
+  const card = cards[idx];
+  el.section.textContent = card.section;
+  el.counter.textContent = `${currentIndex + 1} / ${cards.length}`;
+  el.question.textContent = card.q;
+  el.hint.textContent = card.hint;
+  el.answer.textContent = card.a;
+  el.hint.style.display = 'none';
+  el.answer.style.display = 'none';
+  showingAnswer = false;
+  el.actionRow.style.display = 'flex';
+  el.gradeRow.style.display = 'none';
+  el.hintBtn.textContent = 'Show Hint';
+  updateProgress();
+}
+
+el.hintBtn.addEventListener('click', () => {
+  if (el.hint.style.display === 'none') {
+    el.hint.style.display = 'block';
+    el.hintBtn.textContent = 'Hide Hint';
+  } else {
+    el.hint.style.display = 'none';
+    el.hintBtn.textContent = 'Show Hint';
+  }
+});
+
+el.showAnswer.addEventListener('click', () => {
+  el.answer.style.display = 'block';
+  showingAnswer = true;
+  el.actionRow.style.display = 'none';
+  el.gradeRow.style.display = 'flex';
+});
+
+el.correctBtn.addEventListener('click', () => {
+  const idx = order[currentIndex];
+  if (!mastered.has(idx)) {
+    mastered.add(idx);
+    sessionCorrect++;
+  }
+  nextCard();
+});
+
+el.incorrectBtn.addEventListener('click', () => {
+  nextCard();
+});
+
+function nextCard() {
+  currentIndex = (currentIndex + 1) % order.length;
+  showCard();
+}
+
+el.next.addEventListener('click', nextCard);
+el.prev.addEventListener('click', () => {
+  currentIndex = (currentIndex - 1 + order.length) % order.length;
+  showCard();
+});
+
+el.shuffle.addEventListener('click', () => {
+  order = order.sort(() => Math.random() - 0.5);
+  currentIndex = 0;
+  showCard();
+});
+
+el.reset.addEventListener('click', () => {
+  if (confirm('Reset all progress?')) {
+    mastered.clear();
+    sessionCorrect = 0;
+    currentIndex = 0;
+    showCard();
+  }
+});
+
+el.review.addEventListener('click', () => {
+  el.completion.style.display = 'none';
+  el.controls.style.display = 'flex';
+  currentIndex = 0;
+  showCard();
+});
+
+// Init
+showCard();
+</script>
+</body>
+</html>
